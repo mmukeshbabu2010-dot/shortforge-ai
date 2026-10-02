@@ -30,10 +30,10 @@
         <div><strong>ShortForge <em>AI</em></strong><span>Long Videos → Viral Shorts</span></div>
       </div>
       <nav>
-        <button class="nav-item active" data-view="home"><i class="ph ph-house"></i><span>Home</span></button>
-        <button class="nav-item" data-view="create"><i class="ph ph-scissors"></i><span>Create Shorts</span></button>
-        <button class="nav-item" data-view="history"><i class="ph ph-clock-counter-clockwise"></i><span>History</span></button>
-        <button class="nav-item" data-view="settings"><i class="ph ph-gear"></i><span>Settings</span></button>
+        <button type="button" class="nav-item active" data-view="home"><i class="ph ph-house"></i><span>Home</span></button>
+        <button type="button" class="nav-item" data-view="create"><i class="ph ph-scissors"></i><span>Create Shorts</span></button>
+        <button type="button" class="nav-item" data-view="history"><i class="ph ph-clock-counter-clockwise"></i><span>History</span></button>
+        <button type="button" class="nav-item" data-view="settings"><i class="ph ph-gear"></i><span>Settings</span></button>
       </nav>
       <div class="sidebar-bottom">
         <div class="free-card">
@@ -48,10 +48,10 @@
 
     <main class="main">
       <header class="topbar">
-        <button class="mobile-menu" id="mobileMenu" aria-label="Open menu"><i class="ph ph-list"></i></button>
+        <button type="button" class="mobile-menu" id="mobileMenu" aria-label="Open menu"><i class="ph ph-list"></i></button>
         <div class="top-spacer"></div>
         <span class="open-badge"><i class="ph ph-circle"></i> 100% Free & Open Source</span>
-        <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><i class="ph ph-sun"></i></button>
+        <button type="button" class="icon-btn" id="themeBtn" aria-label="Toggle theme"><i class="ph ph-sun"></i></button>
         <div class="avatar">V</div>
       </header>
 
@@ -73,8 +73,8 @@
           <div class="left-column">
             <section class="source-panel panel">
               <div class="source-tabs">
-                <button class="source-tab active" data-source="youtube"><i class="ph ph-youtube-logo"></i>YouTube URL</button>
-                <button class="source-tab" data-source="upload"><i class="ph ph-upload-simple"></i>Upload Video</button>
+                <button type="button" class="source-tab active" data-source="youtube"><i class="ph ph-youtube-logo"></i>YouTube URL</button>
+                <button type="button" class="source-tab" data-source="upload"><i class="ph ph-upload-simple"></i>Upload Video</button>
               </div>
               <form id="form">
                 <div id="youtubeSource" class="source-content active">
@@ -150,24 +150,24 @@
                 <video id="clipPreview" controls playsinline></video>
                 <div class="preview-placeholder" id="previewPlaceholder"><i class="ph ph-play-circle"></i><span>Select a hook to preview</span></div>
               </div>
-              <div class="preview-actions"><button class="secondary-btn" id="editBtn"><i class="ph ph-pencil-simple"></i> Edit Clip</button><button class="secondary-btn" id="downloadPreviewBtn"><i class="ph ph-download-simple"></i> Download</button></div>
+              <div class="preview-actions"><button type="button" class="secondary-btn" id="editBtn"><i class="ph ph-pencil-simple"></i> Edit Clip</button><button type="button" class="secondary-btn" id="downloadPreviewBtn"><i class="ph ph-download-simple"></i> Download</button></div>
             </section>
 
             <section class="settings-panel panel">
               <div class="panel-heading compact"><h2><i class="ph ph-sliders-horizontal"></i> Clip Settings</h2></div>
-              <div class="setting-group"><label>Output format</label><div class="format-grid"><button class="format active" data-format="9:16"><i class="ph ph-device-mobile"></i><b>9:16</b><small>Shorts</small></button><button class="format" data-format="1:1"><i class="ph ph-square"></i><b>1:1</b><small>Square</small></button><button class="format" data-format="16:9"><i class="ph ph-monitor"></i><b>16:9</b><small>Original</small></button></div></div>
+              <div class="setting-group"><label>Output format</label><div class="format-grid"><button type="button" class="format active" data-format="9:16"><i class="ph ph-device-mobile"></i><b>9:16</b><small>Shorts</small></button><button type="button" class="format" data-format="1:1"><i class="ph ph-square"></i><b>1:1</b><small>Square</small></button><button type="button" class="format" data-format="16:9"><i class="ph ph-monitor"></i><b>16:9</b><small>Original</small></button></div></div>
               <div class="setting-group"><div class="toggle-row"><div><b><i class="ph ph-subtitles"></i> Add subtitles</b><small>Auto-generated locally</small></div><label class="switch"><input id="subtitles" type="checkbox"><span></span></label></div><select id="subtitleStyle" class="select"><option>Modern Highlight</option><option>Clean White</option><option>Minimal</option></select></div>
               <div class="setting-group"><div class="toggle-row"><div><b><i class="ph ph-film-strip"></i> Add B-Roll</b><small>Optional supporting footage</small></div><label class="switch"><input id="broll" type="checkbox"><span></span></label></div><label class="mini-upload"><input id="brollFile" type="file" accept="video/*,image/*"><i class="ph ph-upload-simple"></i><span id="brollName">Use your own B-Roll</span></label></div>
               <div class="setting-group"><label>Number of Shorts</label><select id="count" class="select"><option value="1">1 Short</option><option value="3" selected>3 Shorts</option><option value="5">5 Shorts</option><option value="8">8 Shorts</option></select></div>
-              <button class="generate-btn" id="generateBtn" disabled><i class="ph ph-sparkle"></i> Generate Shorts</button>
+              <button type="button" class="generate-btn" id="generateBtn" disabled><i class="ph ph-sparkle"></i> Generate Shorts</button>
             </section>
 
-            <section class="generated-panel panel"><div class="panel-heading compact"><h2>Generated Shorts</h2><button id="clearResults" class="text-btn">Clear</button></div><div id="results" class="results"><div class="results-empty"><i class="ph ph-film-strip"></i><p>Your generated Shorts will appear here.</p></div></div></section>
+            <section class="generated-panel panel"><div class="panel-heading compact"><h2>Generated Shorts</h2><button type="button" id="clearResults" class="text-btn">Clear</button></div><div id="results" class="results"><div class="results-empty"><i class="ph ph-film-strip"></i><p>Your generated Shorts will appear here.</p></div></div></section>
           </aside>
         </div>
       </section>
 
-      <section class="view" id="view-create"><div class="simple-view"><div class="simple-icon"><i class="ph ph-scissors"></i></div><h1>Create Shorts</h1><p>Start by choosing a YouTube URL or uploading a long video on Home.</p><button class="primary-btn" data-go-home>Start Creating</button></div></section>
+      <section class="view" id="view-create"><div class="simple-view"><div class="simple-icon"><i class="ph ph-scissors"></i></div><h1>Create Shorts</h1><p>Start by choosing a YouTube URL or uploading a long video on Home.</p><button type="button" class="primary-btn" data-go-home>Start Creating</button></div></section>
       <section class="view" id="view-history"><div class="simple-view"><div class="simple-icon"><i class="ph ph-clock-counter-clockwise"></i></div><h1>History</h1><p>Generated clips from this session appear on the Home screen. Persistent project history is coming next.</p></div></section>
       <section class="view" id="view-settings"><div class="simple-view"><div class="simple-icon"><i class="ph ph-gear"></i></div><h1>Settings</h1><p>ShortForge is designed to run locally. Processing stays on your machine unless you host it elsewhere.</p></div></section>
 
