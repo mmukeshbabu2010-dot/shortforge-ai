@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const API_BASE=(document.querySelector('meta[name="shortforge-api"]')?.content||window.SHORTFORGE_API_URL||"").replace(/\\/$/,"");
+const API_BASE=(document.querySelector('meta[name="shortforge-api"]')?.content||window.SHORTFORGE_API_URL||"").replace(/\/$/,"");
 const apiUrl=value=>{if(!value)return value;if(/^https?:\\/\\//i.test(value))return value;return API_BASE+value};
 const state={source:"youtube",hooks:[],selected:[],current:null,results:[]};
 const form=$("#form"),sourceType=$("#sourceType"),url=$("#url"),video=$("#video"),brollFile=$("#brollFile");
