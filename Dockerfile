@@ -21,4 +21,4 @@ RUN mkdir -p /app/data/uploads /app/data/outputs /app/data/previews
 
 EXPOSE 10000
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port \${PORT:-10000}"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}
