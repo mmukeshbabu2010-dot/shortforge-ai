@@ -132,7 +132,7 @@ $$(".nav-item").forEach(btn=>btn.addEventListener("click",()=>{const view=btn.da
 $("#mobileMenu").addEventListener("click",()=>$("#sidebar").classList.toggle("open"));
 $$("[data-go-home]").forEach(x=>x.addEventListener("click",()=>$$(".nav-item")[0].click()));
 $("#themeBtn").addEventListener("click",()=>toast("Dark mode is the default ShortForge workspace."));
-$$(".source-tab").forEach(tab=>tab.addEventListener("click",()=>{state.source=tab.dataset.source;sourceType.value=state.source;$$(".source-tab").forEach(x=>x.classList.toggle("active",x===tab));$("#youtubeSource").classList.toggle("active",state.source==="youtube");$("#uploadSource").classList.toggle("active",state.source==="upload");$("#cookiePicker")?.toggleAttribute("hidden",!localAgentAvailable||state.source!=="youtube")}));
+$$(".source-tab").forEach(tab=>tab.addEventListener("click",()=>{state.source=tab.dataset.source;sourceType.value=state.source;$$(".source-tab").forEach(x=>x.classList.toggle("active",x===tab));$("#youtubeSource").classList.toggle("active",state.source==="youtube");$("#uploadSource").classList.toggle("active",state.source==="upload");$("#cookiePicker")?.toggleAttribute("hidden",!localAgentAvailable||state.source!=="youtube");$("#localBridge")?.toggleAttribute("hidden",state.source!=="youtube")}));
 video.addEventListener("change",()=>{if(video.files[0]){$("#fileName").textContent=video.files[0].name;toast("Video selected. Click Analyze Video to continue.")}});
 $("#dropZone").addEventListener("dragover",e=>{e.preventDefault();e.currentTarget.style.borderColor="#635bff"});
 $("#dropZone").addEventListener("dragleave",e=>e.currentTarget.style.borderColor="");
