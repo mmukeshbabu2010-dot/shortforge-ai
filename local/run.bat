@@ -4,7 +4,7 @@ cd /d "%~dp0"
 
 echo.
 echo ========================================
-echo   ShortForge Local YouTube Bridge
+echo   ShortForge Local AI Bridge
 echo ========================================
 echo.
 
@@ -71,7 +71,7 @@ if errorlevel 1 (
 echo.
 echo Local bridge is starting...
 echo Keep this window open while using ShortForge.
-echo You can now refresh ShortForge and click Analyze Video.
+echo You can now refresh ShortForge and analyze a YouTube URL or local video.
 echo.
 python agent.py
 pause
