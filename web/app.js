@@ -1,4 +1,6 @@
-const $=s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];\nconst API_BASE=(document.querySelector('meta[name="shortforge-api"]')?.content||window.SHORTFORGE_API_URL||"").replace(/\\/$/,"");\nconst apiUrl=value=>{if(!value)return value;if(/^https?:\\/\\//i.test(value))return value;return API_BASE+value};
+const $=s=>document.querySelector(s),$=s=>[...document.querySelectorAll(s)];
+const API_BASE=(document.querySelector('meta[name="shortforge-api"]')?.content||window.SHORTFORGE_API_URL||"").replace(/\\/$/,"");
+const apiUrl=value=>{if(!value)return value;if(/^https?:\\/\\//i.test(value))return value;return API_BASE+value};
 const state={source:"youtube",hooks:[],selected:[],current:null,results:[]};
 const form=$("#form"),sourceType=$("#sourceType"),url=$("#url"),video=$("#video"),brollFile=$("#brollFile");
 const toast=message=>{const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove("show"),2600)};
