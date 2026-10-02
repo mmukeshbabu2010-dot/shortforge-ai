@@ -1,34 +1,47 @@
-# ShortForge Local YouTube Bridge
+# ShortForge Local AI Bridge
 
-The bridge is an optional Windows helper that makes YouTube URL analysis easier and more reliable. Your PC downloads the YouTube video using your own network connection, then uploads only the downloaded video to the ShortForge analysis API.
+The local bridge is the recommended free way to use ShortForge analysis.
 
-## Easiest setup on Windows
+It keeps the heavy AI work on your own Windows PC:
 
-1. Open the ShortForge website.
-2. Under the YouTube URL box, click **Download bridge** if the status says **Setup needed**.
-3. Extract the downloaded ZIP.
-4. Open the **local** folder.
-5. Double-click **run.bat**.
-6. Keep that window open. The first run can install Python and the bridge dependencies automatically.
-7. Return to ShortForge. The status should change to **Local bridge ready** automatically.
-8. Paste your YouTube URL and click **Analyze Video**.
+- YouTube videos are downloaded on your PC.
+- Uploaded videos are analyzed on your PC.
+- Whisper transcription runs locally.
+- YouTube cookies, if used, stay on your PC.
+- Only the video plus the local transcription results are sent to the ShortForge API.
+- Render is used for lightweight storage, thumbnails, and Short generation instead of running Whisper on the free server.
 
-After the first setup, future use is simply: **double-click run.bat → open ShortForge → Analyze Video**.
+## Easiest Windows setup
 
-## Cookies are optional
+1. Open ShortForge.
+2. Click Download bridge in the Local AI bridge card.
+3. Extract the ZIP.
+4. Open the local folder.
+5. Double-click run.bat.
+6. Keep that window open.
+7. Return to ShortForge and wait for Local bridge ready.
+8. Upload a video or paste a YouTube URL and click Analyze Video.
 
-Do not select a cookies file unless YouTube still blocks the local download. If you use one, select a fresh Netscape-format youtube.com cookies file in ShortForge only after the local bridge is ready. The cookies are sent to the local bridge, used for the download attempt, and deleted from its temporary storage afterward. They are not uploaded to the Render analysis API.
+The first analysis downloads the Whisper model to your PC. Later analyses reuse it.
 
-Never share a cookies file with anyone; it can contain active login/session credentials.
+## YouTube cookies
 
-## If the bridge says Setup needed
+Cookies are optional. Use a fresh Netscape-format youtube.com cookies file only if YouTube still blocks the local download.
 
-Make sure the run.bat window is still open. ShortForge checks the local helper automatically every few seconds. You do not need to refresh the page just because the bridge starts.
+Cookies stay on the local bridge and are never uploaded to the Render API.
 
-## Configuration
+Never share a cookies file with anyone.
 
-To use a different ShortForge API, set SHORTFORGE_API_URL before starting run.bat. The default is the hosted ShortForge API.
+## What runs where
 
-## Important
+Your PC:
+- YouTube download
+- Whisper transcription
+- local video analysis
 
-The bridge does not bypass YouTube rules or guarantee every video will download. Some videos may still require a fresh session/cookies or may not be available for download. Use videos you have permission to download.
+ShortForge API:
+- stores the temporary source video
+- creates hook thumbnails
+- prepares generated Shorts
+
+This architecture avoids depending on the limited memory and CPU of a free server for Whisper.
