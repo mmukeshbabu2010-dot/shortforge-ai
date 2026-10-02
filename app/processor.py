@@ -111,13 +111,54 @@ def create_job(source:Path,output_dir:Path,selected:Iterable[dict],*,segments:li
 def download_youtube(url:str,destination:Path)->tuple[Path,str]:
     try:import yt_dlp
     except ImportError as exc:raise RuntimeError("YouTube support needs yt-dlp. Run run.bat again to install it.") from exc
-    destination.parent.mkdir(parents=True,exist_ok=True);template=str(destination.with_suffix(".%(ext)s"))
-    options={"format":"bv*+ba/b","merge_output_format":"mp4","outtmpl":template,"noplaylist":True,"quiet":True,"no_warnings":True}
-    try:
-        with yt_dlp.YoutubeDL(options) as ydl:
-            info=ydl.extract_info(url,download=True);title=info.get("title") or "YouTube video"
-    except Exception as exc:raise RuntimeError(f"Could not download the YouTube video: {exc}") from exc
-    files=sorted(destination.parent.glob(destination.stem+".*"))
-    media=next((p for p in files if p.suffix.lower() in {".mp4",".mkv",".webm",".mov"}),None)
-    if not media:raise RuntimeError("YouTube download completed but no video file was produced.")
-    return media,title
+
+    destination.parent.mkdir(parents=True,exist_ok=True)
+    template=str(destination.with_suffix(".%(ext)s"))
+
+    # YouTube frequently challenges datacenter IPs. Try the Android player
+    # client first, then fall back to yt-dlp's normal client selection.
+    client_attempts = [["android"], None]
+    last_error = None
+
+    for player_clients in client_attempts:
+        for existing in destination.parent.glob(destination.stem+".*"):
+            try:
+                existing.unlink()
+            except OSError:
+                pass
+
+        options={
+            "format":"bv*+ba/b",
+            "merge_output_format":"mp4",
+            "outtmpl":template,
+            "noplaylist":True,
+            "quiet":True,
+            "no_warnings":True,
+            "retries":3,
+            "fragment_retries":3,
+            "socket_timeout":30,
+        }
+        if player_clients:
+            options["extractor_args"]={"youtube":{"player_client":player_clients}}
+
+        try:
+            with yt_dlp.YoutubeDL(options) as ydl:
+                info=ydl.extract_info(url,download=True)
+                title=info.get("title") or "YouTube video"
+
+            files=sorted(destination.parent.glob(destination.stem+".*"))
+            media=next((p for p in files if p.suffix.lower() in {".mp4",".mkv",".webm",".mov"}),None)
+            if media:
+                return media,title
+        except Exception as exc:
+            last_error = exc
+
+    message = str(last_error) if last_error else "Unknown YouTube download error."
+    if "Sign in to confirm" in message or "not a bot" in message:
+        raise RuntimeError(
+            "YouTube is currently blocking server-side downloads from this Render server. "
+            "This is a YouTube anti-bot challenge, not a ShortForge UI error. "
+            "Try another video later or use the Upload Video option."
+        )
+    raise RuntimeError(f"Could not download the YouTube video: {message}")
+
