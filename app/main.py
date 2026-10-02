@@ -73,6 +73,9 @@ async def analyze(
     url: str = Form(""),
     video: UploadFile | None = File(None),
     cookie_file: UploadFile | None = File(None),
+    segments_json: str = Form(""),
+    language: str = Form(""),
+    source_title: str = Form(""),
     count: int = Form(5),
 ):
     job_id = uuid.uuid4().hex[:10]
@@ -106,7 +109,34 @@ async def analyze(
             return {"error": "Add a YouTube URL or choose a video file."}
 
         duration = probe_duration(source_path)
-        segments, language = transcribe(source_path)
+
+        if segments_json.strip():
+            if len(segments_json) > 5_000_000:
+                raise RuntimeError("Local transcription data is too large.")
+            try:
+                raw_segments = json.loads(segments_json)
+            except json.JSONDecodeError as exc:
+                raise RuntimeError("Invalid local transcription data.") from exc
+            if not isinstance(raw_segments, list):
+                raise RuntimeError("Invalid local transcription data.")
+            segments = []
+            for item in raw_segments:
+                if not isinstance(item, dict):
+                    continue
+                try:
+                    start = float(item["start"])
+                    end = float(item["end"])
+                    text = str(item.get("text", "")).strip()
+                except (KeyError, TypeError, ValueError):
+                    continue
+                if end > start and text:
+                    segments.append({"start": start, "end": end, "text": text})
+            if not segments:
+                raise RuntimeError("No speech segments were supplied by the local bridge.")
+            detected_language = language.strip() or "unknown"
+        else:
+            segments, detected_language = transcribe(source_path)
+
         hooks = choose_windows(
             segments,
             count=max(3, min(count * 2, 10)),
@@ -126,9 +156,9 @@ async def analyze(
         (job_dir / "analysis.json").write_text(
             json.dumps(
                 {
-                    "title": title,
+                    "title": source_title.strip() or title,
                     "duration": duration,
-                    "language": language,
+                    "language": detected_language,
                     "hooks": hooks,
                 },
                 indent=2,
@@ -138,9 +168,9 @@ async def analyze(
 
         return {
             "job_id": job_id,
-            "title": title,
+            "title": source_title.strip() or title,
             "duration": duration,
-            "language": language,
+            "language": detected_language,
             "preview_url": f"/media/previews/{job_id}/{source_path.name}",
             "hooks": hooks,
         }
