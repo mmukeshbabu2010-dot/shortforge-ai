@@ -1,45 +1,34 @@
 # ShortForge Local YouTube Bridge
 
-The ShortForge web app normally sends a YouTube URL to the hosted API. YouTube can challenge hosted/datacenter IPs, so this optional local bridge moves only the YouTube download step onto your computer.
+The bridge is an optional Windows helper that makes YouTube URL analysis easier and more reliable. Your PC downloads the YouTube video using your own network connection, then uploads only the downloaded video to the ShortForge analysis API.
 
-## Flow
+## Easiest setup on Windows
 
-ShortForge GitHub Pages -> Local Bridge -> YouTube
+1. Open the ShortForge website.
+2. Under the YouTube URL box, click **Download bridge** if the status says **Setup needed**.
+3. Extract the downloaded ZIP.
+4. Open the **local** folder.
+5. Double-click **run.bat**.
+6. Keep that window open. The first run can install Python and the bridge dependencies automatically.
+7. Return to ShortForge. The status should change to **Local bridge ready** automatically.
+8. Paste your YouTube URL and click **Analyze Video**.
 
-Then:
+After the first setup, future use is simply: **double-click run.bat → open ShortForge → Analyze Video**.
 
-Local Bridge -> ShortForge Render API (uploaded video) -> analysis -> results
+## Cookies are optional
 
-Your YouTube cookies, when supplied, are read and used locally. They are not forwarded to the Render API.
+Do not select a cookies file unless YouTube still blocks the local download. If you use one, select a fresh Netscape-format youtube.com cookies file in ShortForge only after the local bridge is ready. The cookies are sent to the local bridge, used for the download attempt, and deleted from its temporary storage afterward. They are not uploaded to the Render analysis API.
 
-## Windows
+Never share a cookies file with anyone; it can contain active login/session credentials.
 
-1. Open this folder.
-2. Double-click run.bat.
-3. Keep the terminal window open.
-4. Open ShortForge in your browser.
-5. The YouTube panel should show Local bridge ready.
-6. Paste a YouTube URL and click Analyze Video.
+## If the bridge says Setup needed
 
-The bridge uses the same machine/network as your browser, which is important because video services can bind access to the same IP and session cookies.
-
-## Cookies
-
-Only use a cookies file for accounts/videos you are authorized to access. Keep the file private. ShortForge passes the selected cookies only to the local bridge; the bridge deletes its temporary cookie file after the download attempt.
+Make sure the run.bat window is still open. ShortForge checks the local helper automatically every few seconds. You do not need to refresh the page just because the bridge starts.
 
 ## Configuration
 
-Set SHORTFORGE_API_URL before starting the bridge if you host the API somewhere else.
+To use a different ShortForge API, set SHORTFORGE_API_URL before starting run.bat. The default is the hosted ShortForge API.
 
-Example:
+## Important
 
-set SHORTFORGE_API_URL=https://your-api.example.com
-python agent.py
-
-The default API is the ShortForge Render service.
-
-## Notes
-
-- This does not make YouTube downloads guaranteed; YouTube may still require additional anti-bot mechanisms.
-- If the local bridge is not running, the web app keeps the existing hosted-download fallback.
-- Uploaded videos continue to use the hosted /api/analyze upload path.
+The bridge does not bypass YouTube rules or guarantee every video will download. Some videos may still require a fresh session/cookies or may not be available for download. Use videos you have permission to download.
