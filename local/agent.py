@@ -4,6 +4,7 @@ import json
 import os
 import tempfile
 import uuid
+from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -120,6 +121,7 @@ class Handler(BaseHTTPRequestHandler):
         cors_headers(self)
         self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Access-Control-Allow-Private-Network", "true")
         self.send_header("Access-Control-Max-Age", "600")
         self.end_headers()
 
@@ -147,6 +149,9 @@ class Handler(BaseHTTPRequestHandler):
             count = int(payload.get("count", 5))
             if not url:
                 raise RuntimeError("Paste a YouTube URL first.")
+            host = (urlparse(url).hostname or "").lower()
+            if host not in {"youtube.com", "www.youtube.com", "m.youtube.com", "youtu.be", "www.youtu.be"}:
+                raise RuntimeError("The local bridge accepts YouTube URLs only.")
             with tempfile.TemporaryDirectory(prefix=f"shortforge-{uuid.uuid4().hex[:8]}-") as temp:
                 video_path, _ = download_youtube(url, Path(temp), cookies)
                 result = upload_to_shortforge(video_path, count)
