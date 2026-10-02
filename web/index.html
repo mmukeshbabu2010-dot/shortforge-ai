@@ -3,178 +3,106 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#07111f">
-  <meta name="description" content="ShortForge AI turns long videos into Shorts with free local AI clipping and subtitles.">\n  <meta name="shortforge-api" content="https://shortforge-ai-api.onrender.com">
-  <title>ShortForge AI — Long Videos → Shorts</title>
+  <meta name="shortforge-api" content="https://shortforge-ai-api.onrender.com">
+  <title>ShortForge AI</title>
+  <link rel="icon" href="./favicon.svg">
+  <link rel="stylesheet" href="./static/style.css?v=20261002-3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <link rel="stylesheet" href="./static/styles.css">
-<style>
-.youtube-cookies{margin-top:14px;padding:14px 16px;border:1px solid rgba(139,92,246,.28);border-radius:14px;background:rgba(99,91,255,.06)}
-.youtube-cookies-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
-.youtube-cookies-head b{display:block;font-size:13px}.youtube-cookies-head b span{font-size:10px;font-weight:700;margin-left:6px;padding:3px 7px;border-radius:999px;background:rgba(99,91,255,.14);color:#a78bfa;text-transform:uppercase}
-.youtube-cookies-head small,.youtube-cookies-note{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.45}
-.cookie-file-btn{position:relative;display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;padding:9px 12px;border:1px solid rgba(139,92,246,.45);border-radius:10px;color:var(--text);background:rgba(99,91,255,.10);cursor:pointer;font-size:12px;font-weight:700}
-.cookie-file-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-.youtube-cookies-note{margin-bottom:0}
-@media(max-width:700px){.youtube-cookies-head{align-items:flex-start;flex-direction:column}.cookie-file-btn{width:100%;justify-content:center}}
-</style>
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">
-        <div class="brand-mark"><i class="ph ph-lightning"></i></div>
-        <div><strong>ShortForge <em>AI</em></strong><span>Long Videos → Viral Shorts</span></div>
-      </div>
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">S</div><div><strong>ShortForge</strong><small>AI Video Studio</small></div></div>
       <nav>
-        <button type="button" class="nav-item active" data-view="home"><i class="ph ph-house"></i><span>Home</span></button>
-        <button type="button" class="nav-item" data-view="create"><i class="ph ph-scissors"></i><span>Create Shorts</span></button>
-        <button type="button" class="nav-item" data-view="history"><i class="ph ph-clock-counter-clockwise"></i><span>History</span></button>
-        <button type="button" class="nav-item" data-view="settings"><i class="ph ph-gear"></i><span>Settings</span></button>
+        <button type="button" class="nav-item active" data-view="home"><i class="ph ph-house"></i>Home</button>
+        <button type="button" class="nav-item" data-view="create"><i class="ph ph-scissors"></i>Create Shorts</button>
+        <button type="button" class="nav-item" data-view="history"><i class="ph ph-clock-counter-clockwise"></i>History</button>
+        <button type="button" class="nav-item" data-view="settings"><i class="ph ph-gear"></i>Settings</button>
       </nav>
-      <div class="sidebar-bottom">
-        <div class="free-card">
-          <div class="free-icon"><i class="ph ph-heart"></i></div>
-          <strong>100% Free & Open Source</strong>
-          <p>No paid AI APIs. No subscriptions. Run it locally or on your own server.</p>
-          <a href="https://github.com/vruntime-labs/shortforge-ai" target="_blank" rel="noreferrer"><i class="ph ph-github-logo"></i> View on GitHub</a>
-        </div>
-        <small>ShortForge AI v0.2.0<br><span>Open Source · Free Forever</span></small>
-      </div>
+      <div class="sidebar-bottom"><span class="open-badge"><i class="ph ph-circle"></i> 100% Free & Open Source</span><small>ShortForge AI v0.2.0<br><span>Open Source · Free Forever</span></small></div>
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <button type="button" class="mobile-menu" id="mobileMenu" aria-label="Open menu"><i class="ph ph-list"></i></button>
-        <div class="top-spacer"></div>
-        <span class="open-badge"><i class="ph ph-circle"></i> 100% Free & Open Source</span>
-        <button type="button" class="icon-btn" id="themeBtn" aria-label="Toggle theme"><i class="ph ph-sun"></i></button>
-        <div class="avatar">V</div>
+        <button type="button" class="mobile-menu" id="mobileMenu"><i class="ph ph-list"></i></button>
+        <div><h1>Forge your next Short</h1><p>Turn long-form videos into engaging vertical clips.</p></div>
+        <div class="top-actions"><button type="button" class="icon-btn" id="clearResults" title="Clear"><i class="ph ph-trash"></i></button></div>
       </header>
 
       <section class="view active" id="view-home">
-        <div class="hero-row">
-          <div>
-            <h1>Turn Long Videos into <span>Viral Shorts</span></h1>
-            <p>AI-powered clipping, smart hook detection, subtitles, and more — all for free.</p>
+        <section class="source-panel panel">
+          <div class="source-tabs">
+            <button type="button" class="source-tab active" data-source="youtube"><i class="ph ph-youtube-logo"></i>YouTube URL</button>
+            <button type="button" class="source-tab" data-source="upload"><i class="ph ph-upload-simple"></i>Upload Video</button>
           </div>
-          <div class="hero-features">
-            <div><i class="ph ph-sparkle"></i><b>Auto Find Hooks</b><small>Finds engaging moments</small></div>
-            <div><i class="ph ph-subtitles"></i><b>Free Subtitles</b><small>Optional auto captions</small></div>
-            <div><i class="ph ph-film-strip"></i><b>A-Roll + B-Roll</b><small>Optional supporting footage</small></div>
-            <div><i class="ph ph-device-mobile"></i><b>9:16 Vertical</b><small>Ready for Shorts</small></div>
+          <form id="form">
+            <div id="youtubeSource" class="source-content active">
+              <div class="url-row">
+                <div class="input-wrap"><i class="ph ph-link"></i><input id="url" name="url" type="url" placeholder="Paste YouTube video URL here…"></div>
+                <button class="primary-btn" type="submit"><i class="ph ph-sparkle"></i> Analyze Video</button>
+              </div>
+              <div class="source-hint"><span>Supports YouTube links</span><span>•</span><span>Use videos you have permission to download</span></div>
+            </div>
+            <div id="uploadSource" class="source-content">
+              <label class="upload-box" id="dropZone">
+                <input id="video" name="video" type="file" accept="video/*">
+                <div class="upload-icon"><i class="ph ph-cloud-arrow-up"></i></div>
+                <strong>Drop your long video here</strong>
+                <span>MP4, MOV, WebM, MKV · up to 5GB</span>
+                <b>Browse files</b>
+                <small id="fileName"></small>
+              </label>
+              <div class="upload-actions">
+                <button class="primary-btn" type="submit"><i class="ph ph-sparkle"></i> Analyze Video</button>
+              </div>
+            </div>
+            <input type="hidden" id="sourceType" name="source_type" value="youtube">
+          </form>
+        </section>
+
+        <section class="progress-panel panel" id="progressPanel" hidden>
+          <div class="steps"><div class="step active"><span>1</span><div><b>Analyzing</b><small>Reading video & audio</small></div></div><div class="step"><span>2</span><div><b>Hook detection</b><small>Finding moments</small></div></div><div class="step"><span>3</span><div><b>Ready</b><small>Choose your Shorts</small></div></div></div>
+          <div class="progress-track"><div id="progressBar"></div></div><div class="progress-copy"><span id="progressText">Preparing…</span><b id="progressPct">0%</b></div>
+        </section>
+
+        <section class="analysis-layout" id="analysisSection" hidden>
+          <div class="video-card panel">
+            <div class="video-thumb"><video id="sourcePreview" controls preload="metadata"></video><div class="play-chip"><i class="ph ph-play"></i></div></div>
+            <h3 id="sourceTitle">Your video</h3>
+            <div class="summary-meta"><span id="sourceDuration">—</span><span>·</span><span>Local AI analysis</span></div>
+            <div class="analysis-facts">
+              <div><span><i class="ph ph-translate"></i> Speech</span><b id="language">Detected</b></div>
+              <div><span><i class="ph ph-timer"></i> Duration</span><b id="durationLabel">—</b></div>
+              <div><span><i class="ph ph-target"></i> Hooks</span><b id="hookCount">0</b></div>
+              <div><span><i class="ph ph-chart-line-up"></i> Best score</span><b id="bestScore">—</b></div>
+            </div>
           </div>
-        </div>
+          <div class="hooks-panel panel"><div class="panel-head"><div><h2>Detected Hook Moments</h2><p id="hookDescription">Choose the moments you want to turn into Shorts.</p></div><select id="sortHooks"><option value="score">Best hooks</option><option value="time">Timeline</option></select></div><div id="hooks"></div></div>
+        </section>
 
-        <div class="workspace-grid">
-          <div class="left-column">
-            <section class="source-panel panel">
-              <div class="source-tabs">
-                <button type="button" class="source-tab active" data-source="youtube"><i class="ph ph-youtube-logo"></i>YouTube URL</button>
-                <button type="button" class="source-tab" data-source="upload"><i class="ph ph-upload-simple"></i>Upload Video</button>
-              </div>
-              <form id="form">
-                <div id="youtubeSource" class="source-content active">
-                  <div class="url-row">
-                    <div class="input-wrap"><i class="ph ph-link"></i><input id="url" name="url" type="url" placeholder="Paste YouTube video URL here…"></div>
-                    <button class="primary-btn" type="submit"><i class="ph ph-sparkle"></i> Analyze Video</button>
-                  </div>
-                  <div class="source-hint"><span>Supports YouTube links</span><span>•</span><span>Use videos you have permission to download</span></div>
-                </div>
-                <div id="uploadSource" class="source-content">
-                  <label class="upload-box" id="dropZone">
-                    <input id="video" name="video" type="file" accept="video/*">
-                    <div class="upload-icon"><i class="ph ph-cloud-arrow-up"></i></div>
-                    <strong>Drop your long video here</strong>
-                    <span>MP4, MOV, WebM, MKV · up to 5GB</span>
-                    <b>Browse files</b>
-                    <small id="fileName"></small>
-                  </label>
-                </div>
-                <input type="hidden" id="sourceType" name="source_type" value="youtube">
-              </form>
-            </section>
-
-            <section class="progress-panel panel" id="progressPanel" hidden>
-              <div class="steps">
-                <div class="step active"><span>1</span><div><b>Analyzing</b><small>Reading video & audio</small></div></div>
-                <div class="step"><span>2</span><div><b>Finding Hooks</b><small>Scoring key moments</small></div></div>
-                <div class="step"><span>3</span><div><b>Ready</b><small>Select your Shorts</small></div></div>
-              </div>
-              <div class="progress-track"><div id="progressBar"></div></div>
-              <p id="progressText">Preparing your video…</p>
-            </section>
-
-            <section class="analysis-layout" id="analysisSection" hidden>
-              <div class="video-summary panel">
-                <div class="video-thumb"><video id="sourcePreview" controls preload="metadata"></video><div class="play-chip"><i class="ph ph-play"></i></div></div>
-                <h3 id="sourceTitle">Your video</h3>
-                <div class="summary-meta"><span id="sourceDuration">—</span><span>·</span><span>Local AI analysis</span></div>
-                <div class="analysis-facts">
-                  <div><i class="ph ph-translate"></i><span>Speech</span><b id="language">Detected</b></div>
-                  <div><i class="ph ph-timer"></i><span>Duration</span><b id="durationLabel">—</b></div>
-                  <div><i class="ph ph-target"></i><span>Hooks</span><b id="hookCount">0</b></div>
-                  <div><i class="ph ph-chart-line-up"></i><span>Best score</span><b id="bestScore">—</b></div>
-                </div>
-                <div class="feature-used">
-                  <strong>Features</strong>
-                  <p><i class="ph ph-subtitles"></i> Subtitles <b id="featureSubs">Off</b></p>
-                  <p><i class="ph ph-film-strip"></i> B-Roll <b id="featureBroll">Off</b></p>
-                  <p><i class="ph ph-crop"></i> Framing <b>9:16 Vertical</b></p>
-                </div>
-              </div>
-
-              <div class="hooks-panel panel">
-                <div class="panel-heading">
-                  <div><h2>Detected Hook Moments</h2><p id="hookDescription">Choose the moments you want to turn into Shorts.</p></div>
-                  <select id="sortHooks" aria-label="Sort hooks"><option value="score">Best hooks</option><option value="time">Timeline order</option></select>
-                </div>
-                <div id="hookList" class="hook-list"></div>
-              </div>
-            </section>
-
-            <section class="empty-state panel" id="emptyState">
-              <div class="empty-visual"><i class="ph ph-scissors"></i></div>
-              <h2>Forge your first Shorts</h2>
-              <p>Paste a YouTube URL or upload a long video. ShortForge will transcribe it locally, find hook-worthy moments, and let you generate vertical clips.</p>
-            </section>
-          </div>
-
-          <aside class="right-column">
-            <section class="preview-panel panel">
-              <div class="panel-heading compact"><h2><i class="ph ph-monitor-play"></i> Preview Short</h2><span id="previewCount">0 / 0</span></div>
-              <div class="preview-wrap">
-                <video id="clipPreview" controls playsinline></video>
-                <div class="preview-placeholder" id="previewPlaceholder"><i class="ph ph-play-circle"></i><span>Select a hook to preview</span></div>
-              </div>
-              <div class="preview-actions"><button type="button" class="secondary-btn" id="editBtn"><i class="ph ph-pencil-simple"></i> Edit Clip</button><button type="button" class="secondary-btn" id="downloadPreviewBtn"><i class="ph ph-download-simple"></i> Download</button></div>
-            </section>
-
-            <section class="settings-panel panel">
-              <div class="panel-heading compact"><h2><i class="ph ph-sliders-horizontal"></i> Clip Settings</h2></div>
-              <div class="setting-group"><label>Output format</label><div class="format-grid"><button type="button" class="format active" data-format="9:16"><i class="ph ph-device-mobile"></i><b>9:16</b><small>Shorts</small></button><button type="button" class="format" data-format="1:1"><i class="ph ph-square"></i><b>1:1</b><small>Square</small></button><button type="button" class="format" data-format="16:9"><i class="ph ph-monitor"></i><b>16:9</b><small>Original</small></button></div></div>
-              <div class="setting-group"><div class="toggle-row"><div><b><i class="ph ph-subtitles"></i> Add subtitles</b><small>Auto-generated locally</small></div><label class="switch"><input id="subtitles" type="checkbox"><span></span></label></div><select id="subtitleStyle" class="select"><option>Modern Highlight</option><option>Clean White</option><option>Minimal</option></select></div>
-              <div class="setting-group"><div class="toggle-row"><div><b><i class="ph ph-film-strip"></i> Add B-Roll</b><small>Optional supporting footage</small></div><label class="switch"><input id="broll" type="checkbox"><span></span></label></div><label class="mini-upload"><input id="brollFile" type="file" accept="video/*,image/*"><i class="ph ph-upload-simple"></i><span id="brollName">Use your own B-Roll</span></label></div>
-              <div class="setting-group"><label>Number of Shorts</label><select id="count" class="select"><option value="1">1 Short</option><option value="3" selected>3 Shorts</option><option value="5">5 Shorts</option><option value="8">8 Shorts</option></select></div>
-              <button type="button" class="generate-btn" id="generateBtn" disabled><i class="ph ph-sparkle"></i> Generate Shorts</button>
-            </section>
-
-            <section class="generated-panel panel"><div class="panel-heading compact"><h2>Generated Shorts</h2><button type="button" id="clearResults" class="text-btn">Clear</button></div><div id="results" class="results"><div class="results-empty"><i class="ph ph-film-strip"></i><p>Your generated Shorts will appear here.</p></div></div></section>
-          </aside>
-        </div>
+        <section class="empty-state panel" id="emptyState"><div class="empty-icon"><i class="ph ph-scissors"></i></div><h2>Ready to forge</h2><p>Paste a YouTube URL or upload a long video. ShortForge will transcribe it locally, find hook-worthy moments, and let you generate vertical clips.</p></section>
       </section>
 
       <section class="view" id="view-create"><div class="simple-view"><div class="simple-icon"><i class="ph ph-scissors"></i></div><h1>Create Shorts</h1><p>Start by choosing a YouTube URL or uploading a long video on Home.</p><button type="button" class="primary-btn" data-go-home>Start Creating</button></div></section>
-      <section class="view" id="view-history"><div class="simple-view"><div class="simple-icon"><i class="ph ph-clock-counter-clockwise"></i></div><h1>History</h1><p>Generated clips from this session appear on the Home screen. Persistent project history is coming next.</p></div></section>
-      <section class="view" id="view-settings"><div class="simple-view"><div class="simple-icon"><i class="ph ph-gear"></i></div><h1>Settings</h1><p>ShortForge is designed to run locally. Processing stays on your machine unless you host it elsewhere.</p></div></section>
-
-      <footer><span>Powered by open-source tools</span><span>FFmpeg</span><span>Whisper</span><span>Python</span><span>FastAPI</span><span class="footer-right">Made with <i class="ph ph-heart"></i> by vruntime-labs</span></footer>
+      <section class="view" id="view-history"><div class="simple-view"><div class="simple-icon"><i class="ph ph-clock-counter-clockwise"></i></div><h1>History</h1><p>Your generated Shorts will appear here.</p></div></section>
+      <section class="view" id="view-settings"><div class="simple-view"><div class="simple-icon"><i class="ph ph-gear"></i></div><h1>Settings</h1><p>Generation and subtitle settings are available in the studio.</p></div></section>
     </main>
+
+    <aside class="right-panel">
+      <div class="preview-head"><h3><i class="ph ph-device-mobile"></i> Preview Short</h3></div>
+      <div class="preview-box"><video id="clipPreview" controls></video><div id="previewPlaceholder"><i class="ph ph-play-circle"></i><span>Select a hook to preview</span></div></div>
+      <div class="settings-card">
+        <div class="setting-group"><div class="setting-label"><b>Short format</b><small>Choose your output</small></div><div class="format-grid"><button type="button" class="format active" data-format="mp4">MP4</button><button type="button" class="format" data-format="webm">WebM</button></div></div>
+        <div class="setting-group"><div class="toggle-row"><div><b><i class="ph ph-subtitles"></i> Subtitles</b><small>Burn captions into video</small></div><label class="switch"><input id="subtitles" type="checkbox" checked><span></span></label></div><select id="subtitleStyle"><option value="bold">Bold</option><option value="clean">Clean</option><option value="minimal">Minimal</option></select></div>
+        <div class="setting-group"><div class="toggle-row"><div><b><i class="ph ph-film-strip"></i> Add B-Roll</b><small>Optional supporting footage</small></div><label class="switch"><input id="broll" type="checkbox"><span></span></label></div><label class="mini-upload"><input id="brollFile" type="file" accept="video/*,image/*"><i class="ph ph-upload-simple"></i><span id="brollName">Use your own B-Roll</span></label></div>
+        <button id="generateBtn" class="generate-btn" type="button" disabled><i class="ph ph-sparkle"></i> Generate Shorts</button>
+      </div>
+    </aside>
   </div>
   <div class="toast" id="toast"></div>
-  <script src="./static/app.js?v=20261002-6"></script>
+  <script src="./static/app.js?v=20261002-7"></script>
 </body>
 </html>
