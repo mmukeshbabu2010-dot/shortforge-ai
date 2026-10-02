@@ -72,16 +72,33 @@ def health():
 async def analyze(
     url: str = Form(""),
     video: UploadFile | None = File(None),
+    cookie_file: UploadFile | None = File(None),
     count: int = Form(5),
 ):
     job_id = uuid.uuid4().hex[:10]
     job_dir = PREVIEWS / job_id
     job_dir.mkdir(parents=True, exist_ok=True)
     source_path = None
+    cookie_path = None
 
     try:
+        if cookie_file and cookie_file.filename:
+            cookie_bytes = await cookie_file.read(2_000_001)
+            if len(cookie_bytes) > 2_000_000:
+                raise RuntimeError("YouTube cookies file is too large. Please upload a cookies.txt file under 2 MB.")
+            cookie_text = cookie_bytes.decode("utf-8-sig", errors="replace")
+            first_line = cookie_text.splitlines()[0].strip() if cookie_text.splitlines() else ""
+            if first_line not in {"# HTTP Cookie File", "# Netscape HTTP Cookie File"}:
+                raise RuntimeError("Invalid YouTube cookies file. Upload a Netscape-format cookies.txt file.")
+            cookie_path = job_dir / "youtube-cookies.txt"
+            cookie_path.write_bytes(cookie_bytes)
+
         if url.strip():
-            source_path, title = download_youtube(url.strip(), job_dir / "source.mp4")
+            source_path, title = download_youtube(
+                url.strip(),
+                job_dir / "source.mp4",
+                cookie_file=cookie_path,
+            )
         elif video and video.filename:
             source_path = save_upload(video, job_dir / "source")
             title = Path(video.filename).stem.replace("_", " ")
@@ -130,6 +147,12 @@ async def analyze(
     except Exception as exc:
         shutil.rmtree(job_dir, ignore_errors=True)
         return {"error": str(exc)}
+    finally:
+        if cookie_path and cookie_path.exists():
+            try:
+                cookie_path.unlink()
+            except OSError:
+                pass
 
 
 @app.post("/api/generate")

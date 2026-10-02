@@ -11,6 +11,16 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <link rel="stylesheet" href="./static/styles.css">
+<style>
+.youtube-cookies{margin-top:14px;padding:14px 16px;border:1px solid rgba(139,92,246,.28);border-radius:14px;background:rgba(99,91,255,.06)}
+.youtube-cookies-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.youtube-cookies-head b{display:block;font-size:13px}.youtube-cookies-head b span{font-size:10px;font-weight:700;margin-left:6px;padding:3px 7px;border-radius:999px;background:rgba(99,91,255,.14);color:#a78bfa;text-transform:uppercase}
+.youtube-cookies-head small,.youtube-cookies-note{display:block;margin-top:5px;color:var(--muted);font-size:11px;line-height:1.45}
+.cookie-file-btn{position:relative;display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;padding:9px 12px;border:1px solid rgba(139,92,246,.45);border-radius:10px;color:var(--text);background:rgba(99,91,255,.10);cursor:pointer;font-size:12px;font-weight:700}
+.cookie-file-btn input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.youtube-cookies-note{margin-bottom:0}
+@media(max-width:700px){.youtube-cookies-head{align-items:flex-start;flex-direction:column}.cookie-file-btn{width:100%;justify-content:center}}
+</style>
 </head>
 <body>
   <div class="app-shell">
@@ -165,6 +175,6 @@
     </main>
   </div>
   <div class="toast" id="toast"></div>
-  <script src="./static/app.js?v=20261002-4"></script>
+  <script src="./static/app.js?v=20261002-5"></script>
 </body>
 </html>

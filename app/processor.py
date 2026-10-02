@@ -108,57 +108,71 @@ def create_job(source:Path,output_dir:Path,selected:Iterable[dict],*,segments:li
         output=output_dir/f"short_{number:02d}.mp4";make_vertical_clip(source,output,start,end,fmt=fmt,srt=srt,broll=broll);results.append(output)
     return results
 
-def download_youtube(url:str,destination:Path)->tuple[Path,str]:
-    try:import yt_dlp
-    except ImportError as exc:raise RuntimeError("YouTube support needs yt-dlp. Run run.bat again to install it.") from exc
+def download_youtube(
+    url: str,
+    destination: Path,
+    cookie_file: Path | None = None,
+) -> tuple[Path, str]:
+    try:
+        import yt_dlp
+    except ImportError as exc:
+        raise RuntimeError("YouTube support needs yt-dlp. Run run.bat again to install it.") from exc
 
-    destination.parent.mkdir(parents=True,exist_ok=True)
-    template=str(destination.with_suffix(".%(ext)s"))
-
-    # YouTube frequently challenges datacenter IPs. Try the Android player
-    # client first, then fall back to yt-dlp's normal client selection.
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    template = str(destination.with_suffix(".%(ext)s"))
     client_attempts = [["android"], None]
     last_error = None
 
     for player_clients in client_attempts:
-        for existing in destination.parent.glob(destination.stem+".*"):
+        for existing in destination.parent.glob(destination.stem + ".*"):
             try:
                 existing.unlink()
             except OSError:
                 pass
 
-        options={
-            "format":"bv*+ba/b",
-            "merge_output_format":"mp4",
-            "outtmpl":template,
-            "noplaylist":True,
-            "quiet":True,
-            "no_warnings":True,
-            "retries":3,
-            "fragment_retries":3,
-            "socket_timeout":30,
+        options = {
+            "format": "bv*+ba/b",
+            "merge_output_format": "mp4",
+            "outtmpl": template,
+            "noplaylist": True,
+            "quiet": True,
+            "no_warnings": True,
+            "retries": 3,
+            "fragment_retries": 3,
+            "socket_timeout": 30,
         }
+
+        if cookie_file and cookie_file.exists():
+            options["cookiefile"] = str(cookie_file)
+
         if player_clients:
-            options["extractor_args"]={"youtube":{"player_client":player_clients}}
+            options["extractor_args"] = {"youtube": {"player_client": player_clients}}
 
         try:
             with yt_dlp.YoutubeDL(options) as ydl:
-                info=ydl.extract_info(url,download=True)
-                title=info.get("title") or "YouTube video"
+                info = ydl.extract_info(url, download=True)
+                title = info.get("title") or "YouTube video"
 
-            files=sorted(destination.parent.glob(destination.stem+".*"))
-            media=next((p for p in files if p.suffix.lower() in {".mp4",".mkv",".webm",".mov"}),None)
+            files = sorted(destination.parent.glob(destination.stem + ".*"))
+            media = next((p for p in files if p.suffix.lower() in {".mp4", ".mkv", ".webm", ".mov"}), None)
             if media:
-                return media,title
+                return media, title
         except Exception as exc:
             last_error = exc
 
     message = str(last_error) if last_error else "Unknown YouTube download error."
+
     if "Sign in to confirm" in message or "not a bot" in message:
+        if cookie_file and cookie_file.exists():
+            raise RuntimeError(
+                "YouTube still rejected the provided cookies. "
+                "Export a fresh youtube.com cookies.txt file and try again. "
+                "Cookies may also fail when YouTube binds the session to a different IP address."
+            )
         raise RuntimeError(
             "YouTube is currently blocking server-side downloads from this Render server. "
             "This is a YouTube anti-bot challenge, not a ShortForge UI error. "
-            "Try another video later or use the Upload Video option."
+            "Try another video later, upload a cookies.txt file, or use the Upload Video option."
         )
-    raise RuntimeError(f"Could not download the YouTube video: {message}")
 
+    raise RuntimeError(f"Could not download the YouTube video: {message}")
