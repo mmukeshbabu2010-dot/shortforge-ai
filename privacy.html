@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="ShortForge AI privacy policy.">
+  <title>Privacy Policy | ShortForge AI</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0b1020;--panel:#111a2b;--text:#e8edf5;--muted:#aab6c8;--line:#2b374b;--link:#9cc4ff}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.7 system-ui,-apple-system,Segoe UI,sans-serif}
+    main{max-width:820px;margin:0 auto;padding:40px 22px 72px}nav{display:flex;gap:18px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:32px}
+    a{color:var(--link);text-underline-offset:3px}h1,h2{line-height:1.25}h1{font-size:2rem}h2{font-size:1.2rem;margin-top:30px}p,li{color:var(--muted)}.notice{border:1px solid var(--line);padding:14px 16px;background:var(--panel)}small{color:var(--muted)}
+  </style>
+</head>
+<body><main>
+  <nav><a href="./">Back to ShortForge AI</a><a href="./terms.html">Terms and Conditions</a><a href="https://github.com/vruntime-labs">VRuntime Labs on GitHub</a></nav>
+  <h1>Privacy Policy</h1>
+  <p>Effective date: 25 October 2026</p>
+  <p>This page explains the data handling associated with ShortForge AI, based on the published application code and its intended operation. Hosting providers and third-party services may process technical information under their own policies.</p>
+  <h2>Data handled by the application</h2>
+  <ul>
+    <li><strong>Video uploads:</strong> the browser-upload workflow sends the selected video and transcript to the ShortForge API to create analysis results, thumbnails, and clips.</li>
+    <li><strong>Processing files:</strong> source videos, generated previews, thumbnails, and clips are temporarily stored on the processing server. The API schedules job folders for automatic cleanup after 24 hours. This is an operational retention target, not a guarantee that every backup or hosting log is deleted at exactly that time.</li>
+    <li><strong>YouTube processing:</strong> when using the local bridge, video download and transcription are performed on your device; the source video and transcript may then be sent to the processing API for clip generation.</li>
+    <li><strong>Cookies files:</strong> if a client uploads a YouTube cookies file directly to the API, it is used for that job and deleted after analysis. Never upload browser profile files or cookies you do not own or have permission to use.</li>
+    <li><strong>Technical data:</strong> the hosting provider may process request metadata, IP addresses, error logs, and operational records to deliver and secure the service.</li>
+  </ul>
+  <h2>How to reduce data exposure</h2><p>Only upload videos you have rights to use. Avoid videos containing sensitive personal information. Download results you need and do not share job-specific media URLs; anyone who obtains a job URL may be able to access that file until it expires or is deleted.</p>
+  <h2>Service providers and external links</h2>
+  <p>ShortForge AI is hosted through GitHub Pages and a separate processing API hosted by the project. The API may receive source videos, transcripts, generated clips, and (only if a client uploads it to the API) a cookies file.. Links to third-party sites, repositories, application publishers, and services are governed by their own privacy policies. We do not control those services.</p>
+  <h2>Retention and deletion</h2>
+  <p>Where this application stores information in your browser, you can generally remove it by clearing the relevant site data. This may permanently remove local documents, preferences, or installed-app records. Server-side files, if any, follow the retention described above. Do not submit passwords, session cookies, access tokens, or other secrets unless a feature explicitly requires them and you understand the risks.</p>
+  <h2>Children</h2>
+  <p>This project is not intentionally designed to collect personal information from children. If you believe personal information was submitted inappropriately, contact the maintainer using the project’s GitHub repository. Do not post personal or sensitive details in a public issue.</p>
+  <h2>Changes and contact</h2>
+  <p>This policy may be updated when the application’s data practices change. For questions or privacy requests, use the contact method listed on the <a href="https://github.com/vruntime-labs">VRuntime Labs GitHub profile</a>. Do not include sensitive information in a public issue. A dedicated privacy contact should be published before broad public launch.</p>
+  <p class="notice">This policy is informational and is not a legal opinion. Applicable requirements depend on the operator, audience, jurisdictions, and actual deployment configuration. Have it reviewed for the jurisdictions you serve.</p>
+  <small>© 2026 VRuntime Labs, where applicable. Project code and third-party materials remain subject to their respective licenses.</small>
+</main></body></html>
