@@ -33,6 +33,9 @@ jobs:
           cp web/index.html _site/index.html
           cp web/styles.css _site/static/styles.css
           cp web/app.js _site/static/app.js
+          cp web/privacy.html _site/privacy.html
+          cp web/terms.html _site/terms.html
+          cp web/favicon.svg _site/favicon.svg
           touch _site/.nojekyll
 
       - name: Configure GitHub Pages
