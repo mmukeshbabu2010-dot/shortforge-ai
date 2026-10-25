@@ -5,11 +5,14 @@ import json
 import logging
 import re
 import shutil
+import time
 import uuid
+from collections import defaultdict, deque
 from contextlib import suppress
 from pathlib import Path
+from urllib.parse import urlparse
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -64,8 +67,123 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory=WEB), name="static")
 
 
+class RequestBodySizeLimitMiddleware:
+    """Reject oversized request bodies while they are being received, including chunked requests."""
+
+    def __init__(self, app, max_analyze_bytes: int, max_generate_bytes: int):
+        self.app = app
+        self.limits = {
+            "/api/analyze": max_analyze_bytes,
+            "/api/generate": max_generate_bytes,
+        }
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") != "http" or scope.get("method") != "POST":
+            await self.app(scope, receive, send)
+            return
+        limit = self.limits.get(scope.get("path", ""))
+        if not limit:
+            await self.app(scope, receive, send)
+            return
+
+        headers = {key.lower(): value for key, value in scope.get("headers", [])}
+        raw_length = headers.get(b"content-length")
+        if raw_length:
+            try:
+                if int(raw_length) > limit:
+                    await self._reject(scope, send)
+                    return
+            except ValueError:
+                await self._reject(scope, send, 400, "Invalid Content-Length header.")
+                return
+
+        received = 0
+
+        async def limited_receive():
+            nonlocal received
+            message = await receive()
+            if message.get("type") == "http.request":
+                received += len(message.get("body", b""))
+                if received > limit:
+                    raise HTTPException(status_code=413, detail="Request body exceeds the upload size limit.")
+            return message
+
+        await self.app(scope, limited_receive, send)
+
+    async def _reject(self, scope, send, status_code: int = 413, detail: str = "Upload request is too large."):
+        body = json.dumps({"error": detail}).encode("utf-8")
+        headers = [
+            (b"content-type", b"application/json"),
+            (b"content-length", str(len(body)).encode("ascii")),
+            (b"cache-control", b"no-store"),
+        ]
+        origin = dict(scope.get("headers", [])).get(b"origin", b"").decode("latin1")
+        if origin in {"https://vruntime-labs.github.io", "http://localhost", "http://localhost:8000", "http://127.0.0.1:8000"}:
+            headers.extend([(b"access-control-allow-origin", origin.encode("latin1")), (b"vary", b"Origin")])
+        await send({"type": "http.response.start", "status": status_code, "headers": headers})
+        await send({"type": "http.response.body", "body": body})
+
+
+app.add_middleware(
+    RequestBodySizeLimitMiddleware,
+    max_analyze_bytes=MAX_VIDEO_BYTES + MAX_COOKIE_BYTES + 12 * 1024 * 1024,
+    max_generate_bytes=MAX_BROLL_BYTES + 12 * 1024 * 1024,
+)
+
+RATE_WINDOW_SECONDS = 10 * 60
+RATE_LIMITS = {"/api/analyze": 12, "/api/generate": 20}
+_rate_buckets: dict[tuple[str, str], deque[float]] = defaultdict(deque)
+_active_job_requests = 0
+
+
+def is_allowed_youtube_url(value: str) -> bool:
+    try:
+        parsed = urlparse(value.strip())
+        host = (parsed.hostname or "").lower().rstrip(".")
+        return (
+            parsed.scheme == "https"
+            and parsed.username is None
+            and parsed.password is None
+            and parsed.port in (None, 443)
+            and host in {"youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com", "youtu.be", "www.youtube-nocookie.com"}
+        )
+    except ValueError:
+        return False
+
+
 @app.middleware("http")
-async def limit_upload_request_size(request, call_next):
+async def protect_expensive_endpoints(request: Request, call_next):
+    global _active_job_requests
+    path = request.url.path
+    if request.method != "POST" or path not in RATE_LIMITS:
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    now = time.monotonic()
+    bucket = _rate_buckets[(path, client_ip)]
+    while bucket and now - bucket[0] >= RATE_WINDOW_SECONDS:
+        bucket.popleft()
+    if len(bucket) >= RATE_LIMITS[path]:
+        retry_after = max(1, int(RATE_WINDOW_SECONDS - (now - bucket[0])))
+        return JSONResponse(
+            status_code=429,
+            content={"error": "Too many processing requests. Please wait and try again."},
+            headers={"Retry-After": str(retry_after), "Cache-Control": "no-store"},
+        )
+    if _active_job_requests >= 2:
+        return JSONResponse(
+            status_code=503,
+            content={"error": "The processing service is busy. Please retry shortly."},
+            headers={"Retry-After": "20", "Cache-Control": "no-store"},
+        )
+
+    bucket.append(now)
+    _active_job_requests += 1
+    try:
+        return await call_next(request)
+    finally:
+        _active_job_requests -= 1
+
     if request.method == "POST" and request.url.path in {"/api/analyze", "/api/generate"}:
         raw_length = request.headers.get("content-length")
         if raw_length:
@@ -237,6 +355,8 @@ async def analyze(
             cookie_path.write_bytes(cookie_bytes)
 
         if url.strip():
+            if not is_allowed_youtube_url(url):
+                raise RuntimeError("Only HTTPS links from YouTube or youtu.be are supported.")
             source_path, title = download_youtube(
                 url.strip(),
                 job_dir / "source.mp4",
