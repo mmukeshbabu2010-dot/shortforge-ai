@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import io
 import tempfile
 import unittest
 from pathlib import Path
@@ -65,3 +66,23 @@ class MediaAccessTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class UploadSafetyTests(unittest.IsolatedAsyncioTestCase):
+    async def test_upload_limit_rejects_and_removes_partial_file(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            destination = Path(temp) / "source"
+            upload = main.UploadFile(filename="clip.mp4", file=io.BytesIO(b"four"))
+            with self.assertRaises(HTTPException) as raised:
+                await main.save_upload(upload, destination, max_bytes=3)
+            self.assertEqual(raised.exception.status_code, 413)
+            self.assertFalse((Path(temp) / "source.mp4").exists())
+
+    async def test_upload_is_written_with_safe_suffix_and_restricted_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            destination = Path(temp) / "source"
+            upload = main.UploadFile(filename="clip.exe", file=io.BytesIO(b"video"))
+            saved = await main.save_upload(upload, destination, max_bytes=10)
+            self.assertEqual(saved.name, "source.mp4")
+            self.assertEqual(saved.read_bytes(), b"video")
+            self.assertEqual(saved.stat().st_mode & 0o777, 0o600)

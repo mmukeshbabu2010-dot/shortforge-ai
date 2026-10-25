@@ -187,20 +187,6 @@ async def protect_expensive_endpoints(request: Request, call_next):
     finally:
         _active_job_requests -= 1
 
-    if request.method == "POST" and request.url.path in {"/api/analyze", "/api/generate"}:
-        raw_length = request.headers.get("content-length")
-        if raw_length:
-            try:
-                if int(raw_length) > MAX_VIDEO_BYTES + MAX_BROLL_BYTES + 12 * 1024 * 1024:
-                    return JSONResponse(
-                        status_code=413,
-                        content={"error": "Upload is too large. Video limit: 500 MB; B-roll limit: 100 MB."},
-                    )
-            except ValueError:
-                return JSONResponse(status_code=400, content={"error": "Invalid Content-Length header."})
-    return await call_next(request)
-
-
 def cleanup_expired_jobs() -> None:
     cutoff = __import__("time").time() - JOB_RETENTION_SECONDS
     # Treat the analysis folder as the job's canonical creation/retention point
