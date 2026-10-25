@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import re
 import shutil
 import time
@@ -264,6 +265,10 @@ async def save_upload(upload: UploadFile, destination: Path, max_bytes: int) -> 
     written = 0
     try:
         with target.open("wb") as buffer:
+            try:
+                target.chmod(0o600)
+            except OSError:
+                logger.warning("Could not restrict permissions on a temporary upload.")
             while True:
                 chunk = await upload.read(1024 * 1024)
                 if not chunk:
@@ -339,7 +344,7 @@ async def analyze(
     cleanup_expired_jobs()
     job_id = uuid.uuid4().hex
     job_dir = PREVIEWS / job_id
-    job_dir.mkdir(parents=True, exist_ok=False)
+    job_dir.mkdir(parents=True, exist_ok=False, mode=0o700)
     source_path = None
     cookie_path = None
 
@@ -355,6 +360,10 @@ async def analyze(
                 raise RuntimeError("Invalid YouTube cookies file. Upload a Netscape-format cookies.txt file.")
             cookie_path = job_dir / "youtube-cookies.txt"
             cookie_path.write_bytes(cookie_bytes)
+            try:
+                cookie_path.chmod(0o600)
+            except OSError:
+                logger.warning("Could not restrict permissions on a temporary cookie file.")
 
         if url.strip():
             if not is_allowed_youtube_url(url):
@@ -469,9 +478,10 @@ async def generate(
     snapshot_path = job_dir / "analysis.json"
     if not snapshot_path.is_file():
         return {"error": "This analysis has expired. Analyze the video again."}
-    # Keep the source available for the duration of a generation request.
+    # Refresh the directory timestamp so retention cleanup does not expire a job
+    # while it is actively being used. Path.touch() fails on directories.
     try:
-        job_dir.touch()
+        os.utime(job_dir, None)
     except OSError:
         return {"error": "The analyzed video is no longer available."}
 
