@@ -82,15 +82,29 @@ async def limit_upload_request_size(request, call_next):
 
 def cleanup_expired_jobs() -> None:
     cutoff = __import__("time").time() - JOB_RETENTION_SECONDS
-    for root in (PREVIEWS, OUTPUTS):
-        for child in root.iterdir():
-            if not child.is_dir():
-                continue
-            try:
-                if child.stat().st_mtime < cutoff:
-                    shutil.rmtree(child, ignore_errors=True)
-            except OSError:
-                logger.warning("Could not inspect an expired ShortForge job directory.")
+    # Treat the analysis folder as the job's canonical creation/retention point
+    # so generated output cannot outlive its source job by another full day.
+    for job_dir in PREVIEWS.iterdir():
+        if not job_dir.is_dir():
+            continue
+        try:
+            if job_dir.stat().st_mtime < cutoff:
+                job_id = job_dir.name
+                shutil.rmtree(job_dir, ignore_errors=True)
+                shutil.rmtree(OUTPUTS / job_id, ignore_errors=True)
+        except OSError:
+            logger.warning("Could not inspect an expired ShortForge job directory.")
+
+    # Remove stale output directories left behind if an analysis folder was
+    # manually removed or a prior cleanup was interrupted.
+    for output_dir in OUTPUTS.iterdir():
+        if not output_dir.is_dir() or (PREVIEWS / output_dir.name).exists():
+            continue
+        try:
+            if output_dir.stat().st_mtime < cutoff:
+                shutil.rmtree(output_dir, ignore_errors=True)
+        except OSError:
+            logger.warning("Could not inspect an orphaned ShortForge output directory.")
 
 
 async def cleanup_loop() -> None:
