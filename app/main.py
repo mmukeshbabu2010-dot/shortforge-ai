@@ -188,7 +188,6 @@ def get_media(job_id: str, filename: str):
     return FileResponse(
         path,
         media_type=media_type,
-        filename=path.name if OUTPUT_PATTERN.fullmatch(path.name) else None,
         headers={"Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff"},
     )
 
@@ -391,6 +390,7 @@ async def generate(
                 {
                     "name": path.name,
                     "url": f"/api/media/{job_id}/{path.name}",
+                    "download_url": f"/api/download/{job_id}/{path.name}",
                     "duration": float(chosen[index]["end"]) - float(chosen[index]["start"]),
                 }
                 for index, path in enumerate(clips)
