@@ -44,6 +44,19 @@ class MediaAccessTests(unittest.TestCase):
                 with self.assertRaises(HTTPException):
                     main.media_path("short-id", "source.mp4")
 
+    def test_youtube_url_validation_blocks_non_youtube_and_insecure_urls(self) -> None:
+        self.assertTrue(main.is_allowed_youtube_url("https://www.youtube.com/watch?v=abc"))
+        self.assertTrue(main.is_allowed_youtube_url("https://youtu.be/abc"))
+        for url in (
+            "http://youtube.com/watch?v=abc",
+            "https://youtube.com.evil.example/watch?v=abc",
+            "https://127.0.0.1/admin",
+            "https://example.com/video.mp4",
+            "https://user:pass@youtube.com/watch?v=abc",
+        ):
+            with self.subTest(url=url):
+                self.assertFalse(main.is_allowed_youtube_url(url))
+
     def test_data_directory_is_not_mounted_as_a_public_static_directory(self) -> None:
         self.assertFalse(
             any(isinstance(route, Mount) and route.path == "/media" for route in main.app.routes)
