@@ -159,6 +159,8 @@ async def protect_expensive_endpoints(request: Request, call_next):
         return await call_next(request)
 
     client_ip = request.client.host if request.client else "unknown"
+    origin = request.headers.get("origin", "")
+    cors_headers = {"Access-Control-Allow-Origin": origin, "Vary": "Origin"} if origin in {"https://vruntime-labs.github.io", "http://localhost", "http://localhost:8000", "http://127.0.0.1:8000"} else {}
     now = time.monotonic()
     bucket = _rate_buckets[(path, client_ip)]
     while bucket and now - bucket[0] >= RATE_WINDOW_SECONDS:
@@ -168,13 +170,13 @@ async def protect_expensive_endpoints(request: Request, call_next):
         return JSONResponse(
             status_code=429,
             content={"error": "Too many processing requests. Please wait and try again."},
-            headers={"Retry-After": str(retry_after), "Cache-Control": "no-store"},
+            headers={"Retry-After": str(retry_after), "Cache-Control": "no-store", **cors_headers},
         )
     if _active_job_requests >= 2:
         return JSONResponse(
             status_code=503,
             content={"error": "The processing service is busy. Please retry shortly."},
-            headers={"Retry-After": "20", "Cache-Control": "no-store"},
+            headers={"Retry-After": "20", "Cache-Control": "no-store", **cors_headers},
         )
 
     bucket.append(now)
@@ -467,6 +469,11 @@ async def generate(
     snapshot_path = job_dir / "analysis.json"
     if not snapshot_path.is_file():
         return {"error": "This analysis has expired. Analyze the video again."}
+    # Keep the source available for the duration of a generation request.
+    try:
+        job_dir.touch()
+    except OSError:
+        return {"error": "The analyzed video is no longer available."}
 
     try:
         selected_ids = json.loads(selected)
